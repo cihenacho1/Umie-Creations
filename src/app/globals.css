@@ -54,7 +54,7 @@ html {
 }
 
 body {
-  @apply bg-cream-100 text-cocoa-700 antialiased;
+  @apply bg-black text-cocoa-700 antialiased;
   overflow-x: hidden;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "SF Pro Display", "SF Pro Text", "San Francisco", "Segoe UI", Roboto,

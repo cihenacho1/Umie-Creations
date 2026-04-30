@@ -420,7 +420,7 @@ export function RoseScrollHero() {
     <section
       ref={rootRef}
       data-hero-pinned=""
-      className="relative isolate h-[100dvh] w-full touch-pan-y bg-[#070304] text-white overflow-hidden"
+      className="relative z-10 isolate min-h-[100dvh] w-full touch-pan-y bg-black text-white overflow-hidden will-change-transform"
     >
       <div 
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform"
@@ -428,7 +428,7 @@ export function RoseScrollHero() {
       >
         <canvas
           ref={canvasRef}
-          className="h-full w-full scale-[1.002] transform-gpu opacity-95 will-change-transform"
+          className="absolute inset-0 w-full h-full object-cover scale-[1.002] transform-gpu opacity-95 will-change-transform"
         />
 
         {/* Consolidated gradient overlays - Darkened slightly for better centered text contrast */}
