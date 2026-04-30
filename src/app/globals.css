@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #faf7f2;
+  --blush-deep: #c0668a;
+  /* Matches fixed Navbar / SiteHeader height + comfortable gap */
+  --scroll-header-padding: clamp(5rem, 10vw + 3rem, 6.75rem);
+
+  /* shadcn-style tokens (aligned with cream / blush / cocoa) */
+  --background: 40 33% 97%;
+  --foreground: 20 28% 18%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 28% 18%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 28% 18%;
+  --primary: 340 45% 56%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 340 30% 94%;
+  --secondary-foreground: 20 28% 18%;
+  --muted: 40 25% 92%;
+  --muted-foreground: 20 18% 38%;
+  --accent: 340 28% 94%;
+  --accent-foreground: 20 28% 18%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 35 25% 88%;
+  --input: 35 25% 88%;
+  --ring: 340 45% 56%;
+  --radius: 0.75rem;
+}
+
+/**
+ * Smooth in-page scrolling for anchor links (#section). The home GSAP hero sets
+ * `data-gsap-scroll-hero` on <html> while mounted — exclude that case so ScrollTrigger pin doesn’t fight native smooth scroll physics.
+ */
+html {
+  /* `clip` + `pinType:fixed` pinning has caused blank-viewport quirks in Chromium/WebKit. */
+  overflow-x: hidden;
+  scroll-padding-top: var(--scroll-header-padding);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-gsap-scroll-hero]) {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  @apply bg-cream-100 text-cocoa-700 antialiased;
+  overflow-x: hidden;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Display", "SF Pro Text", "San Francisco", "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /** Optional: hook IntersectionObserver to toggle `is-visible` — no scroll-linked parallax. */
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-soft {
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 380ms ease,
+        transform 380ms ease;
+    }
+    .reveal-soft.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-soft {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* Soft selection */
+::selection {
+  @apply bg-blush-200 text-cocoa-700;
+}

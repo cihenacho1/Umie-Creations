@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ServiceType {
+  EVENT_DECOR
+  CHRISTMAS_TREE
+  BOUQUET_FLOWERS
+  CHOCOLATE_TREATS
+}
+
+enum PackageTier {
+  basic
+  premium
+  luxury
+  custom
+}
+
+enum PaymentOption {
+  deposit
+  full
+  custom_quote
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  not_required
+}
+
+enum BookingStatus {
+  new
+  pending_payment
+  paid
+  confirmed
+  completed
+  cancelled
+}
+
+model ServicePackage {
+  id             String      @id @default(cuid())
+  serviceType    ServiceType
+  name           String
+  description    String
+  price          Decimal     // full package price in dollars
+  depositPercent Int         // e.g. 30 = 30%
+  isCustomQuote  Boolean     @default(false)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  bookings Booking[]
+
+  @@index([serviceType])
+  @@index([isActive])
+}
+
+model Booking {
+  id                 String         @id @default(cuid())
+  customerName       String
+  email              String
+  phone              String
+  serviceType        ServiceType
+  packageType        PackageTier
+  eventDate          DateTime
+  eventTime          String         // "14:00" etc.
+  address            String
+  budgetRange        String?
+  notes              String?
+  inspirationImageUrl String?
+  paymentOption      PaymentOption
+  paymentStatus      PaymentStatus  @default(pending)
+  stripeSessionId    String?
+  amount             Decimal        // amount charged or quote deposit (0 for custom quote)
+  status             BookingStatus  @default(new)
+  servicePackageId   String?
+  servicePackage     ServicePackage? @relation(fields: [servicePackageId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventDate])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  imageUrl    String
+  description String?
+  createdAt   DateTime @default(now())
+}
