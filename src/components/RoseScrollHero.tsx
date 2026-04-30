@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import {
   ROSE_HERO_FRAME_COUNT,
   roseHeroFrameIndex,
@@ -9,42 +9,142 @@ import {
 } from "@/lib/rose-hero-sequence";
 
 function scrollEndPx() {
-  return window.matchMedia("(max-width: 767px)").matches ? 2400 : 3200;
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches ? 2400 : 3200;
 }
 
-function imgPathname(img: HTMLImageElement): string {
-  try {
-    return new URL(img.currentSrc || img.src, window.location.href).pathname;
-  } catch {
-    return "";
+// Step 1: Scroll Easing function to remove robotic linear motion
+const easeOutCubic = (x: number): number => {
+  return 1 - Math.pow(1 - x, 3);
+};
+
+// Cinematic Story Sync Configuration
+export const STORY_BEATS = [
+  {
+    id: "beat-1",
+    startFrame: 0,
+    endFrame: 35,
+    headline: "Dreams Designed",
+    subhead: "Where elegance meets imagination.",
+    isCta: false,
+  },
+  {
+    id: "beat-2",
+    startFrame: 40,
+    endFrame: 75,
+    headline: "Uncompromising Detail",
+    subhead: "Artistry in every petal, every fold.",
+    isCta: false,
+  },
+  {
+    id: "beat-3",
+    startFrame: 80,
+    endFrame: 115,
+    headline: "Immersive Atmospheres",
+    subhead: "Transforming empty spaces into breathtaking worlds.",
+    isCta: false,
+  },
+  {
+    id: "beat-4",
+    startFrame: 120,
+    endFrame: 155,
+    headline: "Handcrafted Luxury",
+    subhead: "Bespoke styling for those who demand the exceptional.",
+    isCta: false,
+  },
+  {
+    id: "beat-5",
+    startFrame: 160,
+    endFrame: 195,
+    headline: "A Feast for the Senses",
+    subhead: "Indulgent culinary artistry to crown your celebration.",
+    isCta: false,
+  },
+  {
+    id: "beat-6",
+    startFrame: 200,
+    endFrame: 250, 
+    headline: "Your Legacy Awaits",
+    subhead: "Let Umie Creations curate an unforgettable experience exclusively for you.",
+    isCta: true,
   }
-}
-
-/** Chrome can normalize / encode pathnames slightly; compare without missing frame swaps. */
-function normalizePathForCompare(p: string): string {
-  const noHash = p.split("#")[0]?.split("?")[0] ?? p;
-  try {
-    return decodeURIComponent(noHash);
-  } catch {
-    return noHash;
-  }
-}
-
-function seqImgShowsPath(img: HTMLImageElement, logicalPath: string): boolean {
-  const a = normalizePathForCompare(imgPathname(img));
-  const b = normalizePathForCompare(logicalPath);
-  return a === b;
-}
+];
 
 export function RoseScrollHero() {
   const rootRef = useRef<HTMLElement | null>(null);
-  const sequenceImgRef = useRef<HTMLImageElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imagesRef = useRef<(HTMLImageElement | null | 'failed')[]>(new Array(ROSE_HERO_FRAME_COUNT).fill(null));
+  
+  const lazyLoadStarted = useRef(false);
+  const targetProgressRef = useRef(0);
 
-  const block1Ref = useRef<HTMLDivElement | null>(null);
-  const block2Ref = useRef<HTMLDivElement | null>(null);
-  const block3Ref = useRef<HTMLDivElement | null>(null);
-  const block4Ref = useRef<HTMLDivElement | null>(null);
-  const finalRef = useRef<HTMLDivElement | null>(null);
+  // References for the dynamically generated text blocks
+  const beatRefs = useRef<(HTMLDivElement | null)[]>(new Array(STORY_BEATS.length).fill(null));
+
+  // Step 4: Smarter Preloading Strategy
+  useEffect(() => {
+    if (lazyLoadStarted.current) return;
+    lazyLoadStarted.current = true;
+    
+    let isCancelled = false;
+
+    // Load first frame immediately for fast appearance
+    const firstImg = new Image();
+    firstImg.src = roseHeroFramePath(1);
+    imagesRef.current[0] = firstImg;
+
+    const loadNext = () => {
+      if (isCancelled) return;
+      
+      const currentIdx = roseHeroFrameIndex(targetProgressRef.current, ROSE_HERO_FRAME_COUNT);
+      let found = -1;
+      
+      // Prioritize frames near the current scroll position, spreading outwards
+      for (let offset = 0; offset <= ROSE_HERO_FRAME_COUNT; offset++) {
+        const right = currentIdx + offset;
+        const left = currentIdx - offset;
+        
+        if (right < ROSE_HERO_FRAME_COUNT && imagesRef.current[right] === null) {
+          found = right;
+          break;
+        }
+        if (left >= 0 && imagesRef.current[left] === null) {
+          found = left;
+          break;
+        }
+      }
+
+      if (found === -1) return; // All frames loaded
+
+      const scheduleNext = () => {
+        if (isCancelled) return;
+        if ('requestIdleCallback' in window) {
+          (window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(loadNext);
+        } else {
+          setTimeout(loadNext, 10);
+        }
+      };
+
+      const img = new Image();
+      img.onload = () => {
+        imagesRef.current[found] = img;
+        scheduleNext();
+      };
+      img.onerror = () => {
+        imagesRef.current[found] = 'failed';
+        scheduleNext();
+      };
+      img.src = roseHeroFramePath(found + 1);
+    };
+
+    if (document.readyState === 'complete') {
+      // Delay remaining loads slightly to prioritize initial interaction
+      setTimeout(loadNext, 50);
+    } else {
+      window.addEventListener('load', () => setTimeout(loadNext, 50), { once: true });
+    }
+    
+    return () => { isCancelled = true; };
+  }, []);
 
   /** CSS smooth-scroll + ScrollTrigger pin fight — isolate home hero behind this guard. */
   useLayoutEffect(() => {
@@ -54,20 +154,44 @@ export function RoseScrollHero() {
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-    const frameImg = sequenceImgRef.current;
-    if (!root || !frameImg) return;
+    const canvas = canvasRef.current;
+    if (!root || !canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
 
     let killed = false;
     let revertContext: (() => void) | undefined;
     let resizeDebounce: number | undefined;
-    let refGatherAttempts = 0;
 
+    // Detect lower-performance devices safely
+    interface ExtendedNavigator extends Navigator {
+      deviceMemory?: number;
+    }
+    const nav = navigator as ExtendedNavigator;
+    const isLowEndDevice = nav && ((nav.hardwareConcurrency && nav.hardwareConcurrency <= 4) || (nav.deviceMemory && nav.deviceMemory <= 4));
+    const frameStep = isLowEndDevice ? 2 : 1;
+
+    // Cap device pixel ratio & size canvas accurately
+    const resizeCanvas = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+    };
+
+    resizeCanvas();
+
+    let lastWidth = window.innerWidth;
     const onResize = () => {
       window.clearTimeout(resizeDebounce);
       resizeDebounce = window.setTimeout(() => {
-        void import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-          ScrollTrigger.refresh();
-        });
+        if (window.innerWidth !== lastWidth) {
+          lastWidth = window.innerWidth;
+          resizeCanvas();
+          void import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+            ScrollTrigger.refresh();
+          });
+        }
       }, 120);
     };
 
@@ -83,37 +207,128 @@ export function RoseScrollHero() {
       gsap.registerPlugin(ScrollTrigger);
 
       let frameRaf = 0;
-      /** Latest frame requested by ScrollTrigger; applied on the next animation frame. */
-      let pendingFrameIdx = 0;
+      let currentDrawnIdx = -1;
+      let lastRenderedProgress = -1;
 
-      const applyFrameSeek = () => {
+      const renderFrame = () => {
         frameRaf = 0;
-        const img = sequenceImgRef.current;
-        if (killed || !img) return;
-        const path = roseHeroFramePath(pendingFrameIdx + 1);
-        if (seqImgShowsPath(img, path)) return;
-        img.src = path;
+        if (killed || !canvas || !ctx) return;
+        
+        // Easing mapping (prevents robotic 1:1 scroll snapping)
+        const easedProgress = easeOutCubic(targetProgressRef.current);
+        let rawIdx = roseHeroFrameIndex(easedProgress, ROSE_HERO_FRAME_COUNT);
+        
+        // Skip effective frame decoding on low end devices
+        if (frameStep > 1) {
+          rawIdx = Math.round(rawIdx / frameStep) * frameStep;
+        }
+
+        // --- STORY SYNC TEXT ANIMATION ---
+        // We do this BEFORE the canvas early return so text updates at buttery 60fps
+        // even if the canvas frame index hasn't ticked over to the next integer.
+        STORY_BEATS.forEach((beat, i) => {
+          const el = beatRefs.current[i];
+          if (!el) return;
+          
+          let opacity = 0;
+          let yOffset = 80; // Slide up from 80px (more pronounced cinematic entry)
+          let scale = 0.92; // Slight zoom effect
+          const fadeLen = 12; // Slower fade for elegance
+          
+          if (rawIdx >= beat.startFrame - fadeLen && rawIdx <= beat.endFrame + fadeLen) {
+            if (rawIdx < beat.startFrame) {
+              // Fading in
+              const linearProgress = (rawIdx - (beat.startFrame - fadeLen)) / fadeLen;
+              opacity = Math.max(0, Math.min(1, linearProgress));
+              const easeOut = 1 - Math.pow(1 - opacity, 3);
+              yOffset = 80 * (1 - easeOut);
+              scale = 0.92 + (0.08 * easeOut);
+            } else if (rawIdx > beat.endFrame) {
+              // Fading out
+              const linearProgress = (rawIdx - beat.endFrame) / fadeLen;
+              opacity = Math.max(0, Math.min(1, 1 - linearProgress));
+              const easeIn = Math.pow(linearProgress, 3);
+              yOffset = -80 * easeIn;
+              scale = 1 + (0.08 * easeIn); // Zooms past the camera as it exits
+            } else {
+              // Fully visible
+              opacity = 1;
+              yOffset = 0;
+              scale = 1;
+            }
+          }
+          
+          el.style.opacity = opacity.toFixed(3);
+          el.style.visibility = opacity > 0.01 ? "visible" : "hidden";
+          if (beat.isCta) {
+             el.style.pointerEvents = opacity > 0.5 ? "auto" : "none";
+          }
+          el.style.transform = `translate3d(-50%, calc(-50% + ${yOffset.toFixed(1)}px), 0) scale(${scale.toFixed(3)})`;
+        });
+        
+        // --- CANVAS FRAME RENDER ---
+        // Snapping / Intelligently rounding to prevent jitter
+        const pendingFrameIdx = Math.min(ROSE_HERO_FRAME_COUNT - 1, Math.max(0, Math.round(rawIdx)));
+        
+        if (currentDrawnIdx === pendingFrameIdx) return;
+        
+        // Oscillation Check: Prevent rapid fractional jitter back and forth
+        const progressDelta = Math.abs(targetProgressRef.current - lastRenderedProgress);
+        if (Math.abs(pendingFrameIdx - currentDrawnIdx) === 1 && progressDelta < 0.001) {
+            return; // Ignore micro-scroll jitter
+        }
+        
+        // Find closest loaded frame gracefully if user scrolls faster than network
+        let imgToDraw: HTMLImageElement | null = null;
+        for (let i = pendingFrameIdx; i >= 0; i--) {
+          const img = imagesRef.current[i];
+          if (img && img !== 'failed' && img.complete && img.naturalWidth > 0) {
+            imgToDraw = img;
+            break;
+          }
+        }
+        
+        if (imgToDraw) {
+          const canvasW = canvas.width;
+          const canvasH = canvas.height;
+          const imgW = imgToDraw.naturalWidth || 1920;
+          const imgH = imgToDraw.naturalHeight || 1080;
+          
+          // Maintain object-cover behavior manually on the scaled canvas
+          const scale = Math.max(canvasW / imgW, canvasH / imgH);
+          const drawW = imgW * scale;
+          const drawH = imgH * scale;
+          const x = (canvasW - drawW) / 2;
+          const y = (canvasH - drawH) / 2;
+          
+          ctx.drawImage(imgToDraw, x, y, drawW, drawH);
+          
+          currentDrawnIdx = pendingFrameIdx;
+          lastRenderedProgress = targetProgressRef.current;
+        }
       };
 
       const queueFrameFromProgress = (progress: number) => {
-        pendingFrameIdx = roseHeroFrameIndex(
-          progress,
-          ROSE_HERO_FRAME_COUNT,
-        );
-        if (frameRaf) return;
-        frameRaf = window.requestAnimationFrame(applyFrameSeek);
+        targetProgressRef.current = progress;
+        if (!frameRaf) {
+          frameRaf = window.requestAnimationFrame(renderFrame);
+        }
       };
 
       const syncFrameImmediately = (progress: number) => {
-        pendingFrameIdx = roseHeroFrameIndex(
-          progress,
-          ROSE_HERO_FRAME_COUNT,
-        );
-        const img = sequenceImgRef.current;
-        if (!img || killed) return;
-        const path = roseHeroFramePath(pendingFrameIdx + 1);
-        if (seqImgShowsPath(img, path)) return;
-        img.src = path;
+        targetProgressRef.current = progress;
+        renderFrame();
+      };
+
+      const tryDrawInitial = () => {
+        const firstImg = imagesRef.current[0];
+        if (firstImg && firstImg !== 'failed') {
+          if (firstImg.complete && firstImg.naturalWidth > 0) {
+             syncFrameImmediately(0);
+          } else {
+             firstImg.onload = () => syncFrameImmediately(0);
+          }
+        }
       };
 
       const trySetup = (): void => {
@@ -128,58 +343,13 @@ export function RoseScrollHero() {
         ).matches;
 
         const scrubSeconds = prefersReduced ? false : mqMobile ? 0.32 : 0.4;
-        const fade = mqMobile ? 0.038 : 0.05;
-        const finalIn = mqMobile ? 0.085 : 0.1;
 
-        const b1 = block1Ref.current;
-        const b2 = block2Ref.current;
-        const b3 = block3Ref.current;
-        const b4 = block4Ref.current;
-        const fin = finalRef.current;
-
-        if (!b1 || !b2 || !b3 || !b4 || !fin) {
-          if (refGatherAttempts < 20) {
-            refGatherAttempts += 1;
-            requestAnimationFrame(() => {
-              if (!killed) trySetup();
-            });
-          }
-          return;
-        }
-        refGatherAttempts = 0;
-
-        /** Match first paint to scroll origin. */
-        syncFrameImmediately(0);
+        tryDrawInitial();
 
         try {
-          const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-              defaults: { ease: "none" },
-            });
-
-            gsap.set(b1, { autoAlpha: 0 });
-            gsap.set(b2, { autoAlpha: 0 });
-            gsap.set(b3, { autoAlpha: 0 });
-            gsap.set(b4, { autoAlpha: 0 });
-            gsap.set(fin, { autoAlpha: 0 });
-
-            gsap.set(b1, { autoAlpha: 1 });
-
-            tl.to(b1, { autoAlpha: 1, duration: 0.01 }, 0);
-            tl.to(b1, { autoAlpha: 0, duration: fade }, 0.28);
-
-            tl.to(b2, { autoAlpha: 1, duration: fade }, 0.32);
-            tl.to(b2, { autoAlpha: 0, duration: fade }, 0.58);
-
-            tl.to(b3, { autoAlpha: 1, duration: fade }, 0.62);
-            tl.to(b3, { autoAlpha: 0, duration: fade }, 0.78);
-
-            tl.to(b4, { autoAlpha: 1, duration: fade }, 0.82);
-            tl.to(fin, { autoAlpha: 1, duration: finalIn }, 0.86);
-
+          const ctxGsap = gsap.context(() => {
             const st = ScrollTrigger.create({
               trigger: root,
-              /** Viewport scrolling — avoids Chrome/WebKit pinning/scrub mismatches vs `documentElement` alone when `overflow-x` is constrained on `<html>`/`<body>`. */
               scroller: window,
               start: "top top",
               end: () => `+=${scrollEndPx()}`,
@@ -190,7 +360,6 @@ export function RoseScrollHero() {
               pinSpacing: true,
               invalidateOnRefresh: true,
               fastScrollEnd: true,
-              animation: tl,
               onRefresh: (self) => {
                 syncFrameImmediately(self.progress);
               },
@@ -203,18 +372,6 @@ export function RoseScrollHero() {
               },
             });
 
-            queueMicrotask(() => {
-              st.refresh();
-              syncFrameImmediately(st.progress);
-              requestAnimationFrame(() => {
-                ScrollTrigger.refresh();
-                syncFrameImmediately(st.progress);
-                requestAnimationFrame(() => {
-                  ScrollTrigger.refresh();
-                  syncFrameImmediately(st.progress);
-                });
-              });
-            });
             void document.fonts?.ready?.then(() => {
               ScrollTrigger.refresh();
               syncFrameImmediately(st.progress);
@@ -224,15 +381,12 @@ export function RoseScrollHero() {
           revertContext = () => {
             window.cancelAnimationFrame(frameRaf);
             frameRaf = 0;
-            ctx.revert();
+            ctxGsap.revert();
           };
         } catch (err) {
           console.error("[RoseScrollHero] GSAP setup failed", err);
           revertContext?.();
           revertContext = undefined;
-          void import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-            ScrollTrigger.refresh();
-          });
         }
       };
 
@@ -253,11 +407,11 @@ export function RoseScrollHero() {
   }, []);
 
   const serifHeadline =
-    "font-display text-balance tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)]";
+    "font-display text-balance tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.75)]";
   const sizeHeadline =
-    "text-[1.875rem] leading-[1.12] sm:text-[2.75rem] md:text-[3.5rem] md:leading-[0.98] lg:text-[4.25rem] xl:text-[4.75rem]";
+    "text-[2rem] leading-[1.1] sm:text-[3.25rem] md:text-[4rem] lg:text-[5rem] xl:text-[5.5rem]";
   const accentLine =
-    "[text-shadow:0_1px_8px_rgba(0,0,0,0.45)] text-[clamp(2rem,9vw,2.75rem)] sm:text-[clamp(2.25rem,6vw,3.5rem)] md:text-[clamp(3rem,5vw,4rem)] lg:text-[4.25rem]";
+    "[text-shadow:0_1px_8px_rgba(0,0,0,0.65)] text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem]";
 
   return (
     <section
@@ -265,107 +419,71 @@ export function RoseScrollHero() {
       data-hero-pinned=""
       className="relative isolate min-h-[100svh] w-full touch-pan-y bg-[#070304] text-white"
     >
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {/* 232-frame scroll sequence — `<img>` src swaps beat next/image per-frame optimization. */}
-        {/* eslint-disable-next-line @next/next/no-img-element -- scroll-scrubbed frame sequence */}
-        <img
-          ref={sequenceImgRef}
-          className="h-full w-full scale-[1.002] transform-gpu object-cover opacity-95 will-change-transform"
-          src={roseHeroFramePath(1)}
-          alt=""
-          decoding="async"
-          fetchPriority="high"
-          draggable={false}
-          width={1920}
-          height={1080}
-          sizes="100vw"
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform">
+        <canvas
+          ref={canvasRef}
+          className="h-full w-full scale-[1.002] transform-gpu opacity-95 will-change-transform"
         />
 
+        {/* Consolidated gradient overlays - Darkened slightly for better centered text contrast */}
         <div
-          className="absolute inset-0 bg-gradient-to-b from-black/85 via-transparent to-transparent"
-          aria-hidden
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-tr from-[#2a0710]/92 via-transparent to-transparent"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/82"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_center,rgba(20,6,10,0.15)_10%,rgba(0,0,0,0.55)_62%,rgba(0,0,0,0.92)_100%)]"
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 30%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0.88) 100%),
+              radial-gradient(ellipse at center, rgba(20,6,10,0.4) 10%, rgba(0,0,0,0.65) 75%, rgba(0,0,0,0.95) 100%)
+            `
+          }}
           aria-hidden
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-4 pb-14 pt-[5.75rem] sm:px-6 sm:pb-16 sm:pt-28 md:px-6">
-        <div className="mt-9 max-w-5xl md:mt-10">
-          <div ref={block1Ref} className="[&_br]:hidden sm:[&_br]:inline">
-            <p className={`${serifHeadline} ${sizeHeadline} font-semibold`}>
-              <span className="block sm:inline">Every beautiful moment</span>
-              {" "}
-              <span className="mt-3 block italic text-blush-100/92 sm:mt-0 sm:inline">
-                begins quietly<span className="text-white">.</span>
-              </span>
-            </p>
-          </div>
-
-          <div ref={block2Ref} className="opacity-0 [&_br]:hidden sm:[&_br]:inline">
-            <p className={`${serifHeadline} ${sizeHeadline}`}>
-              <span className="block font-semibold sm:inline">Then we</span>
-              {" "}
-              <span className="mt-3 block border-l-[3px] border-blush-300/85 pl-3 text-blush-100/95 italic sm:ml-6 sm:inline sm:border-l-[3px] sm:pl-4">
-                bring it to life<span className="font-display not-italic text-white">
-                  .
-                </span>
-              </span>
-            </p>
-          </div>
-
-          <div ref={block3Ref} className="opacity-0 [&_br]:hidden sm:[&_br]:inline">
-            <p className={`${serifHeadline} ${sizeHeadline}`}>
-              <span className="block font-semibold sm:inline">
-                Designed with detail.
-              </span>
-              {" "}
-              <span className="mt-3 block italic text-blush-100/90 sm:inline">
-                Felt in every moment.
-              </span>
-            </p>
-          </div>
-
-          <div ref={block4Ref} className="opacity-0">
-            <h1
-              className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-none`}
+      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-4 sm:px-6 md:px-6 pointer-events-none">
+        <div className="relative w-full h-0">
+          {STORY_BEATS.map((beat, index) => (
+            <div
+              key={beat.id}
+              ref={(el) => { beatRefs.current[index] = el; }}
+              className="absolute top-1/2 left-1/2 w-full max-w-5xl opacity-0 invisible will-change-[opacity,transform] flex flex-col items-center justify-center text-center"
             >
-              Create a Beautiful Moment
-            </h1>
-          </div>
-
-          <div ref={finalRef} className="mt-8 opacity-0 sm:mt-10 md:mt-11">
-            <p className="font-sans max-w-2xl text-sm leading-relaxed text-cream-100/93 [text-shadow:0_1px_6px_rgba(0,0,0,0.35)] md:text-base md:leading-relaxed">
-              From breathtaking event decor to handcrafted florals, Christmas styling, and indulgent treats, Umie Creations designs unforgettable moments with elegance and care.
-            </p>
-
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-3 md:mt-9">
-              <Link
-                href="/book#book"
-                className="inline-flex min-h-[46px] items-center justify-center rounded-full bg-gradient-to-br from-blush-200 to-blush-400 px-7 py-2.5 text-center font-sans text-xs font-semibold text-[#140608] shadow-md shadow-black/20 ring-1 ring-white/15 transition hover:brightness-[1.04] active:translate-y-px md:min-h-12 md:text-sm"
-              >
-                Reserve Your Date
-              </Link>
-              <Link
-                href="/gallery#gallery-top"
-                className="inline-flex min-h-[46px] items-center justify-center rounded-full border border-white/35 bg-black/40 px-7 py-2.5 text-center font-sans text-xs font-semibold tracking-wide text-white/95 backdrop-blur-sm transition hover:border-blush-200/50 hover:bg-white/10 active:translate-y-px md:min-h-12 md:text-sm"
-              >
-                Explore Our Work
-              </Link>
+              {beat.isCta ? (
+                <div className="flex flex-col items-center w-full">
+                  <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-none`}>
+                    {beat.headline}
+                  </h1>
+                  <p className="mt-5 font-sans max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-cream-100/90 [text-shadow:0_1px_6px_rgba(0,0,0,0.35)]">
+                    {beat.subhead}
+                  </p>
+                  <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
+                    <Link
+                      href="/book#book"
+                      className="inline-flex w-full sm:w-auto min-h-[48px] items-center justify-center rounded-full bg-gradient-to-br from-blush-200 to-blush-400 px-8 py-3.5 text-center font-sans text-sm font-semibold text-[#140608] shadow-[0_0_20px_rgba(255,182,193,0.3)] ring-1 ring-white/20 transition-all hover:scale-105 hover:brightness-110 active:scale-95 pointer-events-auto"
+                    >
+                      Reserve Your Date
+                    </Link>
+                    <Link
+                      href="/gallery#gallery-top"
+                      className="inline-flex w-full sm:w-auto min-h-[48px] items-center justify-center rounded-full border border-white/40 bg-black/50 px-8 py-3.5 text-center font-sans text-sm font-semibold tracking-wide text-white/95 backdrop-blur-md transition-all hover:bg-white/10 hover:border-blush-200 hover:scale-105 active:scale-95 pointer-events-auto"
+                    >
+                      Explore Our Work
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center w-full">
+                  <p className={`${serifHeadline} ${sizeHeadline} font-semibold w-full`}>
+                    <span className="block drop-shadow-2xl">{beat.headline}</span>
+                    <span className="mt-4 sm:mt-5 md:mt-6 block italic text-blush-100/95 text-[1.25rem] sm:text-[1.75rem] md:text-[2.25rem] lg:text-[2.75rem] font-light drop-shadow-xl">
+                      {beat.subhead}
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
+          ))}
         </div>
 
-        <p className="hidden text-[0.6875rem] font-medium uppercase tracking-[0.2em] text-white/38 md:mt-auto md:block md:pt-10 lg:pt-10">
+        <p className="hidden text-[0.6875rem] font-medium uppercase tracking-[0.2em] text-white/38 md:mt-auto md:block md:pt-10 lg:pt-10 absolute bottom-12 left-1/2 -translate-x-1/2">
           Scroll to reveal
         </p>
       </div>
