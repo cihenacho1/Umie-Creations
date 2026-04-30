@@ -324,13 +324,17 @@ export function RoseScrollHero() {
       };
 
       const tryDrawInitial = () => {
-        const firstImg = imagesRef.current[0];
-        if (firstImg && firstImg !== 'failed') {
-          if (firstImg.complete && firstImg.naturalWidth > 0) {
-             syncFrameImmediately(0);
-          } else {
-             firstImg.onload = () => syncFrameImmediately(0);
-          }
+        let firstImg = imagesRef.current[0];
+        if (!firstImg || firstImg === 'failed') {
+          firstImg = new Image();
+          firstImg.src = roseHeroFramePath(1);
+          imagesRef.current[0] = firstImg;
+        }
+        
+        if (firstImg.complete && firstImg.naturalWidth > 0) {
+           syncFrameImmediately(0);
+        } else {
+           firstImg.onload = () => syncFrameImmediately(0);
         }
       };
 
@@ -424,7 +428,7 @@ export function RoseScrollHero() {
     >
       <div 
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform"
-        style={{ backgroundImage: `url('/hero-sequence/frame_001.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        style={{ backgroundImage: `url('/images/rose-hero-frames/ezgif-frame-001.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         <canvas
           ref={canvasRef}
