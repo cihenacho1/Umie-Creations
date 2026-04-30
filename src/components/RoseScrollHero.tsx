@@ -9,7 +9,9 @@ import {
 } from "@/lib/rose-hero-sequence";
 
 function scrollEndPx() {
-  return typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches ? 2400 : 3200;
+  if (typeof window === "undefined") return 4000;
+  const isMobile = window.matchMedia("(max-width: 767px)").matches;
+  return window.innerHeight * (isMobile ? 6 : 4);
 }
 
 // Step 1: Scroll Easing function to remove robotic linear motion
@@ -420,7 +422,10 @@ export function RoseScrollHero() {
       data-hero-pinned=""
       className="relative isolate h-[100dvh] w-full touch-pan-y bg-[#070304] text-white overflow-hidden"
     >
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform">
+      <div 
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform"
+        style={{ backgroundImage: `url('/hero-sequence/frame_001.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      >
         <canvas
           ref={canvasRef}
           className="h-full w-full scale-[1.002] transform-gpu opacity-95 will-change-transform"
