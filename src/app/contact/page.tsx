@@ -9,26 +9,29 @@ export default function ContactPage() {
       <p className="text-xs font-semibold uppercase tracking-widest text-blush-500">
         Contact & booking
       </p>
-      <h1 className="mt-2 font-serif text-4xl font-semibold text-cocoa-700 md:text-5xl">
+      <h1 className="mt-2 font-serif text-3xl sm:text-4xl font-semibold text-cocoa-700 md:text-5xl">
         We&apos;d love to hear from you
       </h1>
       <p className="mt-6 text-lg leading-relaxed text-cocoa-600">
         The fastest way to reach us is the guided booking form — it captures
-        your date, service selection, and creative notes in one place.
+        your date, service selection, and creative notes in one place so we can
+        begin designing your moment immediately.
       </p>
-      <div className="mt-10 rounded-3xl border border-cream-300/80 bg-white/90 p-8 shadow-card">
-        <p className="font-medium text-cocoa-700">Prefer email?</p>
-        <p className="mt-2 text-sm text-cocoa-600">
-          Replace{" "}
-          <code className="rounded bg-cream-200 px-1">hello@umiecreations.example</code>{" "}
-          in the footer with your real address, or route inquiries through the
-          booking system for structured details.
-        </p>
+      <div className="mt-10 rounded-3xl border border-cream-300/80 bg-white/90 p-8 shadow-card md:p-10 sm:flex sm:items-center sm:justify-between text-center sm:text-left">
+        <div>
+          <p className="font-serif text-xl font-medium text-cocoa-700">Prefer direct email?</p>
+          <p className="mt-2 text-sm text-cocoa-600 max-w-md">
+            For press inquiries, vendor collaborations, or general questions outside of booking, reach out to us directly at{" "}
+            <a href="mailto:hello@umiecreations.com" className="font-semibold text-blush-500 hover:text-blush-600 transition-colors underline underline-offset-4">
+              hello@umiecreations.com
+            </a>.
+          </p>
+        </div>
         <Link
           href="/book"
-          className="mt-6 inline-block rounded-full bg-cocoa-600 px-8 py-3 text-sm font-semibold text-white hover:bg-cocoa-700"
+          className="mt-6 sm:mt-0 whitespace-nowrap inline-flex justify-center rounded-full bg-cocoa-600 px-8 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-cocoa-700"
         >
-          Open booking form
+          Open Booking Form
         </Link>
       </div>
 

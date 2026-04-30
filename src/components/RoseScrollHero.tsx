@@ -205,6 +205,7 @@ export function RoseScrollHero() {
       if (killed) return undefined;
       const { ScrollTrigger } = stMod;
       gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.config({ ignoreMobileResize: true });
 
       let frameRaf = 0;
       let currentDrawnIdx = -1;
@@ -409,15 +410,15 @@ export function RoseScrollHero() {
   const serifHeadline =
     "font-display text-balance tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.75)]";
   const sizeHeadline =
-    "text-[2rem] leading-[1.1] sm:text-[3.25rem] md:text-[4rem] lg:text-[5rem] xl:text-[5.5rem]";
+    "text-[clamp(1.75rem,8vw,5.5rem)] leading-[1.1]";
   const accentLine =
-    "[text-shadow:0_1px_8px_rgba(0,0,0,0.65)] text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem]";
+    "[text-shadow:0_1px_8px_rgba(0,0,0,0.65)] text-[clamp(2.25rem,10vw,5.5rem)]";
 
   return (
     <section
       ref={rootRef}
       data-hero-pinned=""
-      className="relative isolate min-h-[100svh] w-full touch-pan-y bg-[#070304] text-white"
+      className="relative isolate h-[100dvh] w-full touch-pan-y bg-[#070304] text-white overflow-hidden"
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform">
         <canvas
@@ -438,7 +439,7 @@ export function RoseScrollHero() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-4 sm:px-6 md:px-6 pointer-events-none">
+      <div className="relative z-10 mx-auto flex h-[100dvh] max-w-6xl flex-col justify-center px-4 sm:px-6 md:px-6 pointer-events-none">
         <div className="relative w-full h-0">
           {STORY_BEATS.map((beat, index) => (
             <div
@@ -473,7 +474,7 @@ export function RoseScrollHero() {
                 <div className="flex flex-col items-center w-full">
                   <p className={`${serifHeadline} ${sizeHeadline} font-semibold w-full`}>
                     <span className="block drop-shadow-2xl">{beat.headline}</span>
-                    <span className="mt-4 sm:mt-5 md:mt-6 block italic text-blush-100/95 text-[1.25rem] sm:text-[1.75rem] md:text-[2.25rem] lg:text-[2.75rem] font-light drop-shadow-xl">
+                    <span className="mt-4 sm:mt-5 md:mt-6 block italic text-blush-100/95 text-[clamp(1.25rem,5vw,2.75rem)] font-light drop-shadow-xl text-balance px-4 sm:px-0">
                       {beat.subhead}
                     </span>
                   </p>

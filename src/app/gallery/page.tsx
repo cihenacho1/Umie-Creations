@@ -19,7 +19,7 @@ export default async function GalleryPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-blush-500">
           Portfolio
         </p>
-        <h1 className="mt-2 font-serif text-4xl font-semibold text-cocoa-700 md:text-5xl">
+        <h1 className="mt-2 font-serif text-3xl sm:text-4xl font-semibold text-cocoa-700 md:text-5xl">
           Gallery
         </h1>
         <p className="mt-4 text-cocoa-600">

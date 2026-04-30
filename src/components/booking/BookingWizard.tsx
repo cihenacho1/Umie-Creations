@@ -45,7 +45,7 @@ function StepIndicator({ step }: { step: number }) {
       {steps.map((label, i) => (
         <div
           key={label}
-          className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${
+          className={`flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-2 sm:py-1.5 text-[0.65rem] sm:text-xs font-medium ${
             i === step
               ? "bg-blush-400 text-white"
               : i < step
@@ -255,7 +255,7 @@ export function BookingWizard({
   return (
     <form
       onSubmit={handleSubmit(onFinalSubmit)}
-      className="rounded-3xl border border-cream-300/80 bg-white/90 p-6 shadow-soft md:p-10"
+      className="rounded-3xl border border-cream-300/80 bg-white/90 p-5 sm:p-6 shadow-soft md:p-10"
     >
       <StepIndicator step={step} />
 
@@ -332,7 +332,7 @@ export function BookingWizard({
               <label className="text-sm font-medium text-cocoa-700">Date</label>
               <input
                 type="date"
-                className="mt-1 w-full rounded-xl border border-cream-300 bg-cream-50/50 px-3 py-2 text-cocoa-700"
+                className="mt-1 w-full rounded-xl border border-cream-300 bg-cream-50/50 px-3 py-3 sm:py-2 text-cocoa-700"
                 {...register("eventDate")}
               />
               {errors.eventDate && (
@@ -508,10 +508,10 @@ export function BookingWizard({
         </div>
       )}
 
-      <div className="mt-8 flex flex-wrap justify-between gap-4">
+      <div className="mt-8 flex justify-between gap-3 sm:gap-4">
         <button
           type="button"
-          className="rounded-full border border-cream-300 px-6 py-2 text-sm font-medium text-cocoa-600 hover:bg-cream-100"
+          className="rounded-full border border-cream-300 px-6 py-3 sm:py-2 text-sm font-medium text-cocoa-600 hover:bg-cream-100 flex-1 sm:flex-none"
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0 || pending}
         >
@@ -520,7 +520,7 @@ export function BookingWizard({
         {step < steps.length - 1 && (
           <button
             type="button"
-            className="rounded-full bg-blush-400 px-6 py-2 text-sm font-semibold text-white hover:bg-blush-500"
+            className="rounded-full bg-blush-400 px-6 py-3 sm:py-2 text-sm font-semibold text-white hover:bg-blush-500 flex-1 sm:flex-none"
             onClick={() => nextFromStep(step)}
           >
             Continue

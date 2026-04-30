@@ -49,7 +49,7 @@ export function Navbar() {
                   <Link
                     key={l.href}
                     href={l.href}
-                    className="block rounded-2xl px-4 py-3 text-sm text-white/85 transition hover:bg-white/10 hover:text-white"
+                    className="block rounded-2xl px-4 py-4 text-base sm:py-3 sm:text-sm text-white/85 transition hover:bg-white/10 hover:text-white"
                     onClick={closeMobileMenu}
                   >
                     {l.label}

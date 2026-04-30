@@ -11,7 +11,7 @@ export default function AboutPage() {
       <p className="text-xs font-semibold uppercase tracking-widest text-blush-500">
         About
       </p>
-      <h1 className="mt-2 font-serif text-4xl font-semibold text-cocoa-700 md:text-5xl">
+      <h1 className="mt-2 font-serif text-3xl sm:text-4xl font-semibold text-cocoa-700 md:text-5xl">
         Soft luxury, made personal
       </h1>
 
@@ -28,26 +28,27 @@ export default function AboutPage() {
         </div>
         <div className="max-w-none text-cocoa-600">
           <p className="text-lg leading-relaxed">
-            Umie Creations is a premium creative studio specializing in event
+            Umie Creations is a premium creative studio specializing in bespoke event
             decor, seasonal styling, luxury florals, and indulgent chocolate
             gifts. We partner with hosts and gifters who want their moments to
-            feel considered, luminous, and unforgettable.
+            feel considered, luminous, and undeniably unforgettable.
           </p>
           <p className="mt-6 leading-relaxed">
-            From intimate proposals to full reception atmospheres, our process is
-            calm and collaborative. We listen closely, translate your inspiration
-            into a cohesive visual story, and deliver with meticulous care on the
-            day.
+            Our philosophy is rooted in the belief that the most beautiful celebrations 
+            are built on meticulous attention to detail. Whether we are hand-dipping 
+            strawberries for an anniversary or designing a lush, immersive floral 
+            landscape for a reception, our approach remains the same: an unwavering 
+            commitment to elegance.
           </p>
           <p className="mt-6 leading-relaxed">
-            This website is built as a launch-ready booking platform: transparent
-            packages, secure deposits, and a private admin workspace for our team
-            — so you spend less time on logistics and more time enjoying the
-            magic.
+            From intimate proposals to large-scale atmospheres, our process is
+            calm, collaborative, and entirely transparent. We listen closely, translate your inspiration
+            into a cohesive visual story, and deliver with meticulous care so you can focus entirely on 
+            experiencing the magic of your own celebration.
           </p>
           <Link
             href="/book"
-            className="mt-10 inline-block rounded-full bg-blush-400 px-8 py-3 text-sm font-semibold text-white shadow-soft hover:bg-blush-500"
+            className="mt-10 inline-block rounded-full bg-blush-400 px-8 py-3 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-blush-500"
           >
             Work with us
           </Link>
