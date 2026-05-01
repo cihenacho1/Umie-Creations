@@ -20,6 +20,7 @@ export function RoseScrollHero() {
   
   const lazyLoadStarted = useRef(false);
   const targetProgressRef = useRef(0);
+  const mediaWrapRef = useRef<HTMLDivElement | null>(null);
   const sceneOneRef = useRef<HTMLDivElement | null>(null);
   const sceneTwoRef = useRef<HTMLDivElement | null>(null);
   const sceneThreeRef = useRef<HTMLDivElement | null>(null);
@@ -271,6 +272,10 @@ export function RoseScrollHero() {
             // Force timeline duration to exactly 1
             tl.set({}, {}, 1);
 
+            if (mediaWrapRef.current) {
+              tl.fromTo(mediaWrapRef.current, { scale: 1.0 }, { scale: 1.035, ease: "none", duration: 1 }, 0);
+            }
+
             const inDur = 0.08;
             const outDur = 0.08;
 
@@ -337,27 +342,30 @@ export function RoseScrollHero() {
       className="relative z-10 isolate min-h-[100dvh] w-full touch-pan-y overflow-hidden will-change-transform bg-[#070304]"
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform">
-        {/* Poster Fallback */}
-        <div 
-          className="absolute inset-0 w-full h-full z-0"
-          style={{ 
-            backgroundImage: `url('/images/rose-hero-frames/ezgif-frame-001.jpg')`, 
-            backgroundSize: 'cover', 
-            backgroundPosition: 'center',
-            filter: "brightness(1.08) contrast(1.03) saturate(1.02)"
-          }}
-        />
-        
-        {/* Hardware-accelerated Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full object-cover scale-[1.002] transform-gpu opacity-95 will-change-transform z-10"
-          style={{ filter: "brightness(1.08) contrast(1.03) saturate(1.02)" }}
-        />
+        <div ref={mediaWrapRef} className="absolute inset-0 w-full h-full will-change-transform transform-gpu origin-center">
+          {/* Poster Fallback */}
+          <div 
+            className="absolute inset-0 w-full h-full z-0"
+            style={{ 
+              backgroundImage: `url('/images/rose-hero-frames/ezgif-frame-001.jpg')`, 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center',
+              filter: "brightness(1.08) contrast(1.03) saturate(1.02)"
+            }}
+          />
+          
+          {/* Hardware-accelerated Canvas */}
+          <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full object-cover scale-[1.002] transform-gpu opacity-95 will-change-transform z-10"
+            style={{ filter: "brightness(1.08) contrast(1.03) saturate(1.02)" }}
+          />
+        </div>
 
-        {/* Subtle Dark Gradient Overlay */}
+        {/* Soft Warm Overlay & Vignette */}
         <div className="absolute inset-0 pointer-events-none z-20">
-          <div className="w-full h-full bg-gradient-to-b from-[rgba(0,0,0,0.18)] via-transparent to-[rgba(0,0,0,0.18)]" />
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[rgba(250,247,242,0.25)] via-transparent to-[rgba(250,247,242,0.4)]" />
+          <div className="absolute inset-0 w-full h-full shadow-[inset_0_0_120px_rgba(74,63,61,0.1)]" />
         </div>
       </div>
 
