@@ -20,7 +20,9 @@ export function RoseScrollHero() {
   
   const lazyLoadStarted = useRef(false);
   const targetProgressRef = useRef(0);
-  const ctaRef = useRef<HTMLDivElement | null>(null);
+  const sceneOneRef = useRef<HTMLDivElement | null>(null);
+  const sceneTwoRef = useRef<HTMLDivElement | null>(null);
+  const sceneThreeRef = useRef<HTMLDivElement | null>(null);
 
   // Step 4: Smarter Preloading Strategy
   useEffect(() => {
@@ -240,41 +242,56 @@ export function RoseScrollHero() {
 
         try {
           const ctxGsap = gsap.context(() => {
-            if (ctaRef.current) {
-              gsap.set(ctaRef.current, { xPercent: -50, yPercent: -50 });
-              gsap.fromTo(
-                ctaRef.current,
-                { opacity: 0, y: 10 },
-                { opacity: 1, y: 0, duration: 1.5, ease: "power2.out", delay: 0.2 }
-              );
-            }
-            const st = ScrollTrigger.create({
-              trigger: root,
-              scroller: window,
-              start: "top top",
-              end: () => `+=${scrollEndPx()}`,
-              scrub: true,
-              pin: true,
-              pinType: "fixed",
-              anticipatePin: 1,
-              pinSpacing: true,
-              invalidateOnRefresh: true,
-              fastScrollEnd: true,
-              onRefresh: (self) => {
-                syncFrameImmediately(self.progress);
-              },
-              onUpdate: (self) => {
-                if (prefersReduced) {
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: root,
+                scroller: window,
+                start: "top top",
+                end: () => `+=${scrollEndPx()}`,
+                scrub: true,
+                pin: true,
+                pinType: "fixed",
+                anticipatePin: 1,
+                pinSpacing: true,
+                invalidateOnRefresh: true,
+                fastScrollEnd: true,
+                onRefresh: (self) => {
                   syncFrameImmediately(self.progress);
-                } else {
-                  queueFrameFromProgress(self.progress);
-                }
-              },
+                },
+                onUpdate: (self) => {
+                  if (prefersReduced) {
+                    syncFrameImmediately(self.progress);
+                  } else {
+                    queueFrameFromProgress(self.progress);
+                  }
+                },
+              }
             });
+
+            // Force timeline duration to exactly 1
+            tl.set({}, {}, 1);
+
+            const inDur = 0.08;
+            const outDur = 0.08;
+
+            if (sceneOneRef.current) {
+              tl.fromTo(sceneOneRef.current, { opacity: 0, y: 36, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.08);
+              tl.to(sceneOneRef.current, { opacity: 0, y: -28, filter: "blur(8px)", ease: "power2.inOut", duration: outDur }, 0.30);
+            }
+            
+            if (sceneTwoRef.current) {
+              tl.fromTo(sceneTwoRef.current, { opacity: 0, y: 36, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.36);
+              tl.to(sceneTwoRef.current, { opacity: 0, y: -28, filter: "blur(8px)", ease: "power2.inOut", duration: outDur }, 0.62);
+            }
+            
+            if (sceneThreeRef.current) {
+              tl.fromTo(sceneThreeRef.current, { opacity: 0, y: 36, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.68);
+            }
 
             void document.fonts?.ready?.then(() => {
               ScrollTrigger.refresh();
-              syncFrameImmediately(st.progress);
+              const st = tl.scrollTrigger;
+              if (st) syncFrameImmediately(st.progress);
             });
           });
 
@@ -346,31 +363,59 @@ export function RoseScrollHero() {
 
       <div className="relative z-30 mx-auto flex h-[100dvh] max-w-6xl flex-col justify-center px-4 sm:px-6 md:px-6 pointer-events-none">
         <div className="relative w-full h-0">
+          {/* Scene 1 */}
           <div
-            ref={ctaRef}
-            className="absolute top-1/2 left-1/2 w-full max-w-5xl opacity-0 flex flex-col items-center justify-center text-center"
+            ref={sceneOneRef}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 will-change-[opacity,transform,filter]"
           >
-            <div className="flex flex-col items-center w-full">
-              <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-none text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]`}>
-                Design the Moment.<br />Remember the Feeling.
-              </h1>
-              <p className="mt-5 font-sans max-w-3xl text-sm sm:text-base md:text-lg leading-relaxed text-white/80 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-                Luxury event styling, florals, seasonal décor, and handcrafted treats — created with intention.
-              </p>
-              <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
-                <Link
-                  href="/book#book"
-                  className="inline-flex w-full sm:w-auto min-h-[48px] items-center justify-center rounded-full bg-gradient-to-br from-blush-200 to-blush-400 px-8 py-3.5 text-center font-sans text-sm font-semibold text-[#140608] shadow-[0_0_20px_rgba(255,182,193,0.3)] ring-1 ring-white/20 transition-all hover:scale-105 hover:brightness-110 active:scale-95 pointer-events-auto"
-                >
-                  Reserve Your Date
-                </Link>
-                <Link
-                  href="/services"
-                  className="inline-flex w-full sm:w-auto min-h-[48px] items-center justify-center rounded-full border border-neutral-200 bg-white/80 px-8 py-3.5 text-center font-sans text-sm font-semibold tracking-wide text-neutral-900 backdrop-blur-md transition-all hover:bg-neutral-100 hover:border-blush-200 hover:scale-105 active:scale-95 pointer-events-auto"
-                >
-                  Explore Services
-                </Link>
-              </div>
+            <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
+              BESPOKE EVENT DECOR
+            </p>
+            <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
+              Every detail begins with a feeling.
+            </h1>
+            <p className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
+              From the first petal to the final glow, we design moments that feel intentional, intimate, and unforgettable.
+            </p>
+          </div>
+
+          {/* Scene 2 */}
+          <div
+            ref={sceneTwoRef}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 opacity-0 will-change-[opacity,transform,filter]"
+          >
+            <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
+              FLORALS • TREATS • SEASONAL DESIGN
+            </p>
+            <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
+              Soft beauty. Rich texture. Lasting impressions.
+            </h1>
+            <p className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
+              Florals, luxury arrangements, chocolate-covered treats, and seasonal installations crafted for celebrations that deserve more than ordinary.
+            </p>
+          </div>
+
+          {/* Scene 3 */}
+          <div
+            ref={sceneThreeRef}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 opacity-0 will-change-[opacity,transform,filter]"
+          >
+            <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
+              UMIE CREATIONS
+            </p>
+            <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
+              Luxury moments, beautifully created.
+            </h1>
+            <p className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
+              For weddings, intimate events, holiday styling, and custom experiences — we bring the atmosphere to life.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <Link
+                href="/services"
+                className="inline-flex w-full sm:w-auto min-h-[48px] items-center justify-center rounded-full bg-[#2A1F1D] px-8 py-3.5 text-center font-sans text-sm font-semibold text-[#FAF7F2] shadow-md transition-all hover:bg-[#4A3F3D] hover:scale-105 active:scale-95 pointer-events-auto"
+              >
+                Explore Our Services
+              </Link>
             </div>
           </div>
         </div>
