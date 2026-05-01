@@ -71,7 +71,7 @@ export function ServicesSection() {
   const buttonRef = useReveal();
 
   return (
-    <section id="services" className="relative w-full bg-cream-100 pb-32">
+    <section id="services" className="relative w-full bg-gradient-to-b from-[#EFE8DF] via-[#FAF7F2] to-[#FAF7F2] pb-32">
       <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pt-20 md:pt-32">
         <div className="max-w-2xl reveal-soft" ref={headerRef}>
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-blush-500">

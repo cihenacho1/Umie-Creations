@@ -21,6 +21,7 @@ export function RoseScrollHero() {
   const lazyLoadStarted = useRef(false);
   const targetProgressRef = useRef(0);
   const mediaWrapRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLDivElement | null>(null);
   const sceneOneRef = useRef<HTMLDivElement | null>(null);
   const sceneTwoRef = useRef<HTMLDivElement | null>(null);
   const sceneThreeRef = useRef<HTMLDivElement | null>(null);
@@ -273,24 +274,28 @@ export function RoseScrollHero() {
             tl.set({}, {}, 1);
 
             if (mediaWrapRef.current) {
-              tl.fromTo(mediaWrapRef.current, { scale: 1.0 }, { scale: 1.035, ease: "none", duration: 1 }, 0);
+              tl.fromTo(mediaWrapRef.current, { scale: 1.0, y: 0 }, { scale: 1.045, y: -24, ease: "none", duration: 1 }, 0);
             }
 
             const inDur = 0.08;
             const outDur = 0.08;
 
+            if (titleRef.current) {
+              tl.to(titleRef.current, { autoAlpha: 0, y: -60, filter: "blur(12px)", ease: "power2.inOut", duration: 0.12 }, 0.04);
+            }
+
             if (sceneOneRef.current) {
-              tl.fromTo(sceneOneRef.current, { opacity: 0, y: 36, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.08);
-              tl.to(sceneOneRef.current, { opacity: 0, y: -28, filter: "blur(8px)", ease: "power2.inOut", duration: outDur }, 0.30);
+              tl.fromTo(sceneOneRef.current, { autoAlpha: 0, y: 36, filter: "blur(10px)" }, { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.18);
+              tl.to(sceneOneRef.current, { autoAlpha: 0, y: -28, filter: "blur(8px)", ease: "power2.inOut", duration: outDur }, 0.38);
             }
             
             if (sceneTwoRef.current) {
-              tl.fromTo(sceneTwoRef.current, { opacity: 0, y: 36, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.36);
-              tl.to(sceneTwoRef.current, { opacity: 0, y: -28, filter: "blur(8px)", ease: "power2.inOut", duration: outDur }, 0.62);
+              tl.fromTo(sceneTwoRef.current, { autoAlpha: 0, y: 36, filter: "blur(10px)" }, { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.44);
+              tl.to(sceneTwoRef.current, { autoAlpha: 0, y: -28, filter: "blur(8px)", ease: "power2.inOut", duration: outDur }, 0.68);
             }
             
             if (sceneThreeRef.current) {
-              tl.fromTo(sceneThreeRef.current, { opacity: 0, y: 36, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.68);
+              tl.fromTo(sceneThreeRef.current, { autoAlpha: 0, y: 36, filter: "blur(10px)" }, { autoAlpha: 1, y: 0, filter: "blur(0px)", ease: "power3.out", duration: inDur }, 0.74);
             }
 
             void document.fonts?.ready?.then(() => {
@@ -339,7 +344,7 @@ export function RoseScrollHero() {
     <section
       ref={rootRef}
       data-hero-pinned=""
-      className="relative z-10 isolate min-h-[100dvh] w-full touch-pan-y overflow-hidden will-change-transform bg-[#070304]"
+      className="relative z-10 isolate min-h-[100dvh] w-full touch-pan-y overflow-hidden will-change-transform bg-[#FAF7F2]"
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden translate-z-0 will-change-transform">
         <div ref={mediaWrapRef} className="absolute inset-0 w-full h-full will-change-transform transform-gpu origin-center">
@@ -364,17 +369,27 @@ export function RoseScrollHero() {
 
         {/* Soft Warm Overlay & Vignette */}
         <div className="absolute inset-0 pointer-events-none z-20">
-          <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[rgba(250,247,242,0.25)] via-transparent to-[rgba(250,247,242,0.4)]" />
-          <div className="absolute inset-0 w-full h-full shadow-[inset_0_0_120px_rgba(74,63,61,0.1)]" />
+          <div className="absolute inset-0 w-full h-full bg-gradient-to-b from-[rgba(245,235,225,0.15)] via-transparent to-[rgba(210,187,169,0.25)]" />
+          <div className="absolute inset-0 w-full h-full shadow-[inset_0_0_140px_rgba(50,38,36,0.15)]" />
         </div>
       </div>
 
       <div className="relative z-30 mx-auto flex h-[100dvh] max-w-6xl flex-col justify-center px-4 sm:px-6 md:px-6 pointer-events-none">
         <div className="relative w-full h-0">
+          {/* Opening Title */}
+          <div
+            ref={titleRef}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center items-center z-40 will-change-[opacity,transform,filter]"
+          >
+            <h1 className="font-display text-[clamp(2.5rem,7vw,7rem)] whitespace-nowrap font-medium tracking-[0.12em] md:tracking-[0.18em] uppercase text-[#2A1F1D] opacity-95 text-center leading-none">
+              UMIE CREATIONS
+            </h1>
+          </div>
           {/* Scene 1 */}
           <div
             ref={sceneOneRef}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 will-change-[opacity,transform,filter]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 invisible will-change-[opacity,transform,filter]"
+            style={{ opacity: 0, visibility: 'hidden' }}
           >
             <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
               BESPOKE EVENT DECOR
@@ -390,7 +405,8 @@ export function RoseScrollHero() {
           {/* Scene 2 */}
           <div
             ref={sceneTwoRef}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 opacity-0 will-change-[opacity,transform,filter]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 invisible will-change-[opacity,transform,filter]"
+            style={{ opacity: 0, visibility: 'hidden' }}
           >
             <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
               FLORALS • TREATS • SEASONAL DESIGN
@@ -406,7 +422,8 @@ export function RoseScrollHero() {
           {/* Scene 3 */}
           <div
             ref={sceneThreeRef}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 opacity-0 will-change-[opacity,transform,filter]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 invisible will-change-[opacity,transform,filter]"
+            style={{ opacity: 0, visibility: 'hidden' }}
           >
             <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
               UMIE CREATIONS
@@ -420,9 +437,10 @@ export function RoseScrollHero() {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <Link
                 href="/services"
-                className="inline-flex w-full sm:w-auto min-h-[48px] items-center justify-center rounded-full bg-[#2A1F1D] px-8 py-3.5 text-center font-sans text-sm font-semibold text-[#FAF7F2] shadow-md transition-all hover:bg-[#4A3F3D] hover:scale-105 active:scale-95 pointer-events-auto"
+                className="group inline-flex w-full sm:w-auto min-h-[52px] items-center justify-center rounded-full bg-[#2A1F1D]/90 backdrop-blur-sm border border-[#4A3F3D]/30 px-8 py-3.5 text-center font-sans text-sm font-semibold text-[#FAF7F2] shadow-[0_8px_20px_-6px_rgba(42,31,29,0.3)] transition-all duration-300 hover:bg-[#3A2F2D] hover:shadow-[0_12px_24px_-6px_rgba(42,31,29,0.4)] hover:-translate-y-1 active:scale-95 pointer-events-auto"
               >
                 Explore Our Services
+                <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
             </div>
           </div>
