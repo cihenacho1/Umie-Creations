@@ -339,6 +339,8 @@ export function RoseScrollHero() {
     "text-[clamp(1.75rem,8vw,5.5rem)] leading-[1.1]";
   const accentLine =
     "text-[clamp(2.25rem,10vw,5.5rem)]";
+  
+  const textSupport = { textShadow: "0 2px 16px rgba(250, 247, 242, 0.2), 0 1px 4px rgba(250, 247, 242, 0.25)" };
 
   return (
     <section
@@ -391,13 +393,13 @@ export function RoseScrollHero() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 invisible will-change-[opacity,transform,filter]"
             style={{ opacity: 0, visibility: 'hidden' }}
           >
-            <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
+            <p style={textSupport} className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
               BESPOKE EVENT DECOR
             </p>
-            <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
+            <h1 style={textSupport} className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
               Every detail begins with a feeling.
             </h1>
-            <p className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
+            <p style={textSupport} className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
               From the first petal to the final glow, we design moments that feel intentional, intimate, and unforgettable.
             </p>
           </div>
@@ -408,13 +410,13 @@ export function RoseScrollHero() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 invisible will-change-[opacity,transform,filter]"
             style={{ opacity: 0, visibility: 'hidden' }}
           >
-            <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
+            <p style={textSupport} className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
               FLORALS • TREATS • SEASONAL DESIGN
             </p>
-            <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
+            <h1 style={textSupport} className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
               Soft beauty. Rich texture. Lasting impressions.
             </h1>
-            <p className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
+            <p style={textSupport} className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
               Florals, luxury arrangements, chocolate-covered treats, and seasonal installations crafted for celebrations that deserve more than ordinary.
             </p>
           </div>
@@ -425,13 +427,13 @@ export function RoseScrollHero() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 md:left-12 lg:left-24 md:translate-x-0 -translate-y-1/2 w-full max-w-3xl flex flex-col items-center md:items-start text-center md:text-left px-4 md:px-0 z-40 invisible will-change-[opacity,transform,filter]"
             style={{ opacity: 0, visibility: 'hidden' }}
           >
-            <p className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
+            <p style={textSupport} className="text-[#8C3A40] uppercase tracking-[0.2em] font-medium text-[0.6875rem] md:text-xs mb-3 md:mb-4">
               UMIE CREATIONS
             </p>
-            <h1 className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
+            <h1 style={textSupport} className={`font-display ${accentLine} font-semibold leading-[1.05] md:leading-[1] text-[#2A1F1D]`}>
               Luxury moments, beautifully created.
             </h1>
-            <p className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
+            <p style={textSupport} className="mt-4 md:mt-5 font-sans max-w-xl text-sm sm:text-base md:text-lg leading-relaxed text-[#4A3F3D]">
               For weddings, intimate events, holiday styling, and custom experiences — we bring the atmosphere to life.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
