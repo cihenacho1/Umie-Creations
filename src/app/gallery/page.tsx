@@ -1,7 +1,6 @@
-import Image from "next/image";
 import type { GalleryItem } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { normalizeGalleryImageUrl } from "@/lib/gallery-image-url";
+import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
 export default async function GalleryPage() {
   const items: GalleryItem[] = await prisma.galleryItem
@@ -28,34 +27,7 @@ export default async function GalleryPage() {
         </p>
       </header>
 
-      <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
-        {items.map((item, idx) => (
-          <figure
-            key={item.id}
-            className="mb-4 break-inside-avoid overflow-hidden rounded-3xl bg-cream-200 shadow-card"
-          >
-            <div className="relative aspect-[4/5] w-full">
-              <Image
-                src={normalizeGalleryImageUrl(item.imageUrl)}
-                alt={item.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 33vw"
-                priority={idx < 2}
-              />
-            </div>
-            <figcaption className="p-4">
-              <p className="font-serif text-lg text-cocoa-700">{item.title}</p>
-              <p className="text-xs uppercase tracking-wide text-blush-500">
-                {item.category}
-              </p>
-              {item.description && (
-                <p className="mt-2 text-sm text-cocoa-600">{item.description}</p>
-              )}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      <GalleryGrid items={items} />
     </div>
   );
 }

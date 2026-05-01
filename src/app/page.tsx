@@ -1,17 +1,31 @@
 import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/marketing/Hero";
+import { RoseScrollHero } from "@/components/RoseScrollHero";
 import { ServicesSection } from "@/components/ServicesSection";
+import { FeaturedGallery } from "@/components/marketing/FeaturedGallery";
+import { prisma } from "@/lib/prisma";
 
-/** Stay static-only so `/` cannot accidentally opt into dynamic rendering. */
 export const dynamic = "force-static";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const items = await prisma.galleryItem.findMany({ take: 7, orderBy: { createdAt: "desc" } });
+
   return (
-    <div className="w-full">
+    <div className="w-full relative bg-[#070304] flex flex-col min-h-screen">
+      {/* 1. Navbar */}
       <Navbar />
-      <Hero />
-      <div className="w-full min-h-[60vh] md:min-h-[35vh] bg-gradient-to-b from-black via-[#070304] to-cream-100" aria-hidden="true" />
+      
+      {/* 2. Original RoseScrollHero Animation */}
+      <RoseScrollHero />
+      
+      {/* 3. Services Section */}
       <ServicesSection />
+      
+      {/* 4. Gallery Section */}
+      <section className="w-full bg-cream-100 py-20 px-4 md:px-6">
+        <div className="mx-auto max-w-6xl">
+          <FeaturedGallery items={items} />
+        </div>
+      </section>
     </div>
   );
 }

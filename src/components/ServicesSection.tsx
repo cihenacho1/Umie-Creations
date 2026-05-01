@@ -1,72 +1,104 @@
+"use client";
+
 import Link from "next/link";
+import Image from "next/image";
+import { BRAND_COLLAGE_SEVEN } from "@/lib/brand-images";
+import { useReveal } from "@/hooks/use-reveal";
 
 const CARDS = [
   {
     title: "Event Decor",
-    desc: "Ceremony and reception styling with editorial impact.",
+    desc: "Ceremony and reception styling with editorial impact. We transform blank spaces into immersive environments, layering premium textiles, structural backdrops, and intentional lighting to create unforgettable atmospheres.",
+    link: "/book?service=EVENT_DECOR"
   },
   {
     title: "Floral Arrangements",
-    desc: "Bouquets, installations, centerpieces, and refined detail.",
+    desc: "Bouquets, cascading installations, textural centerpieces, and refined detail. Every stem is selected and placed with purpose to reflect the scale and emotion of your celebration.",
+    link: "/book?service=FLORAL_ARRANGEMENT"
   },
   {
     title: "Christmas Styling",
-    desc: "Tree decor and seasonal moments with texture, glow, and grace.",
+    desc: "Tree decor and seasonal moments with texture, glow, and grace. Moving beyond generic holiday themes to treat your home's decor as a true extension of luxury interior design.",
+    link: "/christmas"
   },
   {
     title: "Chocolate-Covered Treats",
-    desc: "Indulgent favors and gifting — refined, memorable, never loud.",
+    desc: "Indulgent favors and gifting — refined, memorable, never loud. Using premium artisan chocolate and delicate finishes like edible gold leaf to crown your event.",
+    link: "/treats"
   },
-] as const;
+];
+
+function SceneBlock({ item, index }: { item: typeof CARDS[number]; index: number }) {
+  const ref = useReveal();
+  const isEven = index % 2 === 0;
+  const image = BRAND_COLLAGE_SEVEN[index];
+
+  return (
+    <div ref={ref} className="reveal-soft flex flex-col gap-10 md:flex-row md:items-center py-20 lg:py-32">
+      {/* Image Side */}
+      <div className={`relative w-full aspect-[4/5] md:aspect-square lg:aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl ${isEven ? 'md:order-1' : 'md:order-2'}`}>
+        <Image 
+          src={image!.src} 
+          alt={image!.alt || item.title}
+          fill
+          className="object-cover transition-transform duration-1000 hover:scale-105"
+        />
+      </div>
+
+      {/* Text Side */}
+      <div className={`flex-1 md:px-10 lg:px-16 ${isEven ? 'md:order-2' : 'md:order-1'}`}>
+        <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl text-cocoa-700 tracking-tight">
+          {item.title}
+        </h3>
+        <p className="mt-6 md:mt-8 text-lg leading-relaxed text-cocoa-600">
+          {item.desc}
+        </p>
+        <div className="mt-10">
+          <Link
+            href={item.link}
+            className="inline-flex items-center justify-center rounded-full border border-cocoa-700/25 bg-white px-8 py-3.5 text-sm font-semibold text-cocoa-700 shadow-card transition hover:border-blush-300/55 hover:bg-cream-50"
+          >
+            Explore {item.title.split(' ')[0]}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function ServicesSection() {
-  return (
-    <section
-      id="services"
-      className="relative min-h-[100svh] w-full scroll-mt-2 bg-cream-100"
-    >
-      <div className="mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-4 py-20 md:px-6 lg:py-28">
-        <p className="font-sans text-[0.6875rem] font-semibold uppercase tracking-[0.28em] text-blush-500 md:text-xs">
-          CHOOSE YOUR MOMENT
-        </p>
-        <h2 className="font-display mt-4 text-balance text-3xl font-semibold tracking-tight text-cocoa-700 md:text-5xl lg:text-[3.35rem]">
-          What can we create for you?
-        </h2>
-        <p className="mt-4 max-w-2xl font-sans text-sm leading-relaxed text-cocoa-600 md:text-[0.95rem]">
-          A curated menu for the memories people cherish — anchored in tactile
-          details and luminous atmosphere.
-        </p>
+  const headerRef = useReveal();
+  const buttonRef = useReveal();
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {CARDS.map((c) => (
-            <div
-              key={c.title}
-              className="group rounded-[1.375rem] border border-blush-200/40 bg-white/95 p-7 shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-blush-300/65 hover:shadow-soft"
-            >
-              <h3 className="font-display text-lg font-semibold text-cocoa-700 md:text-xl">
-                {c.title}
-              </h3>
-              <p className="mt-4 font-sans text-sm leading-relaxed text-cocoa-600 md:text-[0.9375rem]">
-                {c.desc}
-              </p>
-              <div className="mt-7 h-[2px] w-10 rounded-full bg-gradient-to-r from-blush-300/85 to-transparent transition-all duration-500 group-hover:w-16 group-hover:from-blush-400" />
-            </div>
-          ))}
+  return (
+    <section id="services" className="relative w-full bg-cream-100 pb-32">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pt-20 md:pt-32">
+        <div className="max-w-2xl reveal-soft" ref={headerRef}>
+          <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-blush-500">
+            CHOOSE YOUR MOMENT
+          </p>
+          <h2 className="font-display mt-6 text-balance text-4xl font-semibold tracking-tight text-cocoa-700 md:text-6xl lg:text-7xl">
+            What can we create for you?
+          </h2>
+          <p className="mt-6 font-sans text-lg md:text-xl leading-relaxed text-cocoa-600">
+            A curated menu for the memories people cherish — anchored in tactile
+            details and luminous atmosphere.
+          </p>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-          <Link
-            href="/services#overview"
-            className="inline-flex items-center justify-center rounded-full bg-cocoa-700 px-7 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-cocoa-800"
-          >
-            View services
-          </Link>
-          <Link
-            href="/book#book"
-            className="inline-flex items-center justify-center rounded-full border border-cocoa-700/25 bg-white px-7 py-3 text-sm font-semibold text-cocoa-700 shadow-card transition hover:border-blush-300/55 hover:bg-cream-50"
-          >
-            Reserve your date
-          </Link>
+        <div className="mt-10 md:mt-20 flex flex-col">
+          {CARDS.map((c, i) => (
+            <SceneBlock key={c.title} item={c} index={i} />
+          ))}
+        </div>
+        
+        <div className="mt-12 text-center reveal-soft" ref={buttonRef}>
+           <Link
+             href="/services"
+             className="inline-flex items-center justify-center rounded-full bg-cocoa-700 px-10 py-4 text-sm font-semibold text-white shadow-soft transition hover:bg-cocoa-800"
+           >
+             View All Service Packages
+           </Link>
         </div>
       </div>
     </section>
