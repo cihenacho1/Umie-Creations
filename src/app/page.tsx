@@ -21,8 +21,20 @@ export default async function HomePage() {
       <ServicesSection />
       
       {/* 4. Gallery Section */}
-      <section className="w-full bg-[#FAF7F2] py-20 px-4 md:px-6">
-        <div className="mx-auto max-w-6xl">
+      <section className="relative w-full overflow-hidden bg-[#FAF7F2] py-20 px-4 md:px-6">
+        {/* Soft Fabric Background Texture */}
+        <div 
+          className="absolute inset-0 w-full h-full opacity-[0.35] pointer-events-none z-0"
+          style={{
+            backgroundImage: "url('/images/champagne_fabric_texture.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            mixBlendMode: "multiply",
+            filter: "blur(2px)"
+          }}
+        />
+        <div className="relative z-10 mx-auto max-w-6xl">
           <FeaturedGallery items={items} />
         </div>
       </section>

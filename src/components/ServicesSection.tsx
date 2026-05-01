@@ -71,8 +71,35 @@ export function ServicesSection() {
   const buttonRef = useReveal();
 
   return (
-    <section id="services" className="relative w-full bg-gradient-to-b from-[#EFE8DF] via-[#FAF7F2] to-[#FAF7F2] pb-32">
-      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pt-20 md:pt-32">
+    <section 
+      id="services" 
+      className="relative w-full overflow-hidden bg-gradient-to-b from-[#DDCAB5] via-[#EFE0CF] to-[#FAF7F2] pb-32 -mt-32 z-20"
+      style={{
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 128px)',
+        maskImage: 'linear-gradient(to bottom, transparent, black 128px)',
+      }}
+    >
+      {/* Spacer to offset the negative margin and keep content position stable */}
+      <div className="h-32 w-full pointer-events-none" />
+      {/* Soft Fabric Background Texture */}
+      <div 
+        className="absolute inset-0 w-full h-full opacity-[0.35] pointer-events-none z-0"
+        style={{
+          backgroundImage: "url('/images/champagne_fabric_texture.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "top center",
+          backgroundRepeat: "no-repeat",
+          mixBlendMode: "multiply",
+          filter: "blur(2px)"
+        }}
+      />
+      
+      {/* Top Inset Shadow to blend the hero edge */}
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[rgba(90,65,45,0.08)] to-transparent pointer-events-none z-0" />
+      {/* Subtle Radial Glow to blend with hero */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150vw] md:w-[120vw] h-[800px] bg-[radial-gradient(ellipse_at_top,_rgba(255,245,230,0.35)_0%,_rgba(210,170,140,0.12)_40%,_transparent_70%)] pointer-events-none z-0" />
+      
+      <div className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 pt-24 md:pt-32">
         <div className="max-w-2xl reveal-soft" ref={headerRef}>
           <p className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-blush-500">
             CHOOSE YOUR MOMENT
