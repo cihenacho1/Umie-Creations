@@ -9,8 +9,8 @@ import {
 } from "@/lib/rose-hero-sequence";
 
 function scrollEndPx() {
-  if (typeof window === "undefined") return 2800;
-  return window.innerHeight * 2.8;
+  if (typeof window === "undefined") return 4200;
+  return window.innerHeight * 4.2;
 }
 
 export function RoseScrollHero() {
@@ -248,7 +248,7 @@ export function RoseScrollHero() {
                 scroller: window,
                 start: "top top",
                 end: () => `+=${scrollEndPx()}`,
-                scrub: true,
+                scrub: 1.5,
                 pin: true,
                 pinType: "fixed",
                 anticipatePin: 1,
