@@ -3,14 +3,18 @@ import { prisma } from "@/lib/prisma";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
 export default async function GalleryPage() {
-  const items: GalleryItem[] = await prisma.galleryItem
-    .findMany({
-      orderBy: { createdAt: "desc" },
-    })
-    .catch((err) => {
+  let items: GalleryItem[] = [];
+  if (process.env.DATABASE_URL) {
+    try {
+      items = await prisma.galleryItem.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+    } catch (err) {
       console.error("[gallery] database query failed", err);
-      return [];
-    });
+    }
+  } else {
+    console.warn("DATABASE_URL is missing. Using empty gallery list.");
+  }
 
   return (
     <div id="gallery-top" className="mx-auto max-w-6xl px-4 py-14 md:px-6">

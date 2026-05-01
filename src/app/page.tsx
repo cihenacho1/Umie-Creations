@@ -3,11 +3,21 @@ import { RoseScrollHero } from "@/components/RoseScrollHero";
 import { ServicesSection } from "@/components/ServicesSection";
 import { FeaturedGallery } from "@/components/marketing/FeaturedGallery";
 import { prisma } from "@/lib/prisma";
+import type { GalleryItem } from "@prisma/client";
 
 export const dynamic = "force-static";
 
 export default async function HomePage() {
-  const items = await prisma.galleryItem.findMany({ take: 7, orderBy: { createdAt: "desc" } });
+  let items: GalleryItem[] = [];
+  if (process.env.DATABASE_URL) {
+    try {
+      items = await prisma.galleryItem.findMany({ take: 7, orderBy: { createdAt: "desc" } });
+    } catch (err) {
+      console.error("[page] database query failed", err);
+    }
+  } else {
+    console.warn("DATABASE_URL is missing. Using empty gallery list for homepage.");
+  }
 
   return (
     <div className="w-full relative bg-[#FAF7F2] flex flex-col min-h-screen">
