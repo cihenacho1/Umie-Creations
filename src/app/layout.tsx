@@ -4,6 +4,7 @@ import "./globals.css";
 import { HashScrollHandler } from "@/components/HashScrollHandler";
 import { LayoutConditionalHeader } from "@/components/LayoutConditionalHeader";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -25,10 +26,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
-        <HashScrollHandler />
-        <LayoutConditionalHeader />
-        <main className="min-w-0 flex-1">{children}</main>
-        <SiteFooter />
+        <SmoothScrollProvider>
+          <HashScrollHandler />
+          <LayoutConditionalHeader />
+          <main className="min-w-0 flex-1">{children}</main>
+          <SiteFooter />
+        </SmoothScrollProvider>
       </body>
     </html>
   );
