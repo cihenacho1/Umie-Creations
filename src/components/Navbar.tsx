@@ -35,7 +35,7 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <Link
               href="/book#book"
-              className="inline-flex whitespace-nowrap rounded-full bg-gradient-to-br from-blush-200 to-blush-400 px-2.5 py-1.5 text-[0.6875rem] font-semibold text-[#140608] shadow-[0_4px_20px_-6px_rgba(192,102,138,0.55)] transition hover:brightness-[1.05] active:translate-y-px sm:px-4 sm:py-2 sm:text-xs"
+              className="hidden sm:inline-flex whitespace-nowrap rounded-full bg-gradient-to-br from-blush-200 to-blush-400 px-2.5 py-1.5 text-[0.6875rem] font-semibold text-[#140608] shadow-[0_4px_20px_-6px_rgba(192,102,138,0.55)] transition hover:brightness-[1.05] active:translate-y-px sm:px-4 sm:py-2 sm:text-xs"
             >
               Reserve Your Date
             </Link>

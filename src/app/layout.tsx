@@ -25,7 +25,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+      <body className="flex min-h-screen flex-col overflow-x-hidden" suppressHydrationWarning>
         <SmoothScrollProvider>
           <HashScrollHandler />
           <LayoutConditionalHeader />

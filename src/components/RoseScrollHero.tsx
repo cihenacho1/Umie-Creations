@@ -10,7 +10,9 @@ import {
 
 function scrollEndPx() {
   if (typeof window === "undefined") return 4200;
-  return window.innerHeight * 4.2;
+  // Reduce scroll distance on mobile for a snappier, more readable experience
+  const multiplier = window.innerWidth < 768 ? 2.8 : 4.2;
+  return window.innerHeight * multiplier;
 }
 
 export function RoseScrollHero() {
@@ -383,7 +385,7 @@ export function RoseScrollHero() {
             ref={titleRef}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center items-center z-40 will-change-[opacity,transform,filter]"
           >
-            <h1 className="font-display text-[clamp(2.5rem,7vw,7rem)] whitespace-nowrap font-medium tracking-[0.12em] md:tracking-[0.18em] uppercase text-[#2A1F1D] opacity-95 text-center leading-none">
+            <h1 className="font-display text-[clamp(1.75rem,8vw,7rem)] whitespace-nowrap font-medium tracking-[0.10em] md:tracking-[0.18em] uppercase text-[#2A1F1D] opacity-95 text-center leading-none">
               UMIE CREATIONS
             </h1>
           </div>
